@@ -1,5 +1,5 @@
 {
-    "aggiornato": "2026-10-22T10:37:14",
+    "aggiornato": "2026-10-22T10:58:50",
     "anno_formativo": "2026\/2027",
     "orari": [
         {
@@ -8486,6 +8486,16 @@
         {
             "data": "2026-10-22",
             "giorno": "GIO",
+            "corso": "OP.ABBIGLIAMENTO-OP. BEN. EST IeFP-2",
+            "da": "09:00",
+            "a": "10:00",
+            "materia": "INGLESE",
+            "docente_assente": "DI SALVO SIMONETTA",
+            "docente_sostituto": "CANNATELLA ANGELO"
+        },
+        {
+            "data": "2026-10-22",
+            "giorno": "GIO",
             "corso": "OP. RIP. VEIC A MOTORE IeFP-1",
             "da": "09:00",
             "a": "10:00",
@@ -8506,6 +8516,16 @@
         {
             "data": "2026-10-22",
             "giorno": "GIO",
+            "corso": "OP.ABBIGLIAMENTO-OP. BEN. ACC IeFP-1",
+            "da": "10:00",
+            "a": "11:00",
+            "materia": "INGLESE",
+            "docente_assente": "DI SALVO SIMONETTA",
+            "docente_sostituto": "CANNATELLA ANGELO"
+        },
+        {
+            "data": "2026-10-22",
+            "giorno": "GIO",
             "corso": "OP. RIP. VEIC A MOTORE IeFP-1",
             "da": "10:00",
             "a": "11:00",
@@ -8522,6 +8542,16 @@
             "materia": "LAB. MECCANICO",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
+        },
+        {
+            "data": "2026-10-22",
+            "giorno": "GIO",
+            "corso": "OP. RIST.-OP.ELETTRICO IeFP-2",
+            "da": "11:00",
+            "a": "12:00",
+            "materia": "INGLESE",
+            "docente_assente": "DI SALVO SIMONETTA",
+            "docente_sostituto": "AMMIRATA GIUSEPPE"
         },
         {
             "data": "2026-10-22",
@@ -8562,6 +8592,16 @@
             "materia": "LABORATORIO ELETTRICO",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
+        },
+        {
+            "data": "2026-10-22",
+            "giorno": "GIO",
+            "corso": "OP. RISTORAZIONE IeFP-3",
+            "da": "13:00",
+            "a": "14:00",
+            "materia": "INGLESE",
+            "docente_assente": "DI SALVO SIMONETTA",
+            "docente_sostituto": "CILLUFFO RICCARDO"
         },
         {
             "data": "2026-10-22",
