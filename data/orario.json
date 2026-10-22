@@ -1,5 +1,5 @@
 {
-    "aggiornato": "2026-10-22T10:58:50",
+    "aggiornato": "2026-10-22T11:21:36",
     "anno_formativo": "2026\/2027",
     "orari": [
         {
@@ -8470,6 +8470,7 @@
             "da": "08:00",
             "a": "09:00",
             "materia": "LABORATORIO MECCANICA POLIVALENTE",
+            "aula": "P10",
             "docente_assente": "DI CARO VINCENZO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8480,6 +8481,7 @@
             "da": "08:00",
             "a": "09:00",
             "materia": "LAB. MECCANICO",
+            "aula": "P1",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARONE FABIO"
         },
@@ -8490,6 +8492,7 @@
             "da": "09:00",
             "a": "10:00",
             "materia": "INGLESE",
+            "aula": "P27",
             "docente_assente": "DI SALVO SIMONETTA",
             "docente_sostituto": "CANNATELLA ANGELO"
         },
@@ -8500,6 +8503,7 @@
             "da": "09:00",
             "a": "10:00",
             "materia": "LABORATORIO MECCANICA POLIVALENTE",
+            "aula": "P26",
             "docente_assente": "DI CARO VINCENZO",
             "docente_sostituto": "BARONE FABIO"
         },
@@ -8510,6 +8514,7 @@
             "da": "09:00",
             "a": "10:00",
             "materia": "LAB. MECCANICO",
+            "aula": "P3",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8520,6 +8525,7 @@
             "da": "10:00",
             "a": "11:00",
             "materia": "INGLESE",
+            "aula": "P25",
             "docente_assente": "DI SALVO SIMONETTA",
             "docente_sostituto": "CANNATELLA ANGELO"
         },
@@ -8530,6 +8536,7 @@
             "da": "10:00",
             "a": "11:00",
             "materia": "LABORATORIO MECCANICA POLIVALENTE",
+            "aula": "P3",
             "docente_assente": "DI CARO VINCENZO",
             "docente_sostituto": "BARONE FABIO"
         },
@@ -8540,6 +8547,7 @@
             "da": "10:00",
             "a": "11:00",
             "materia": "LAB. MECCANICO",
+            "aula": "P7",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8550,6 +8558,7 @@
             "da": "11:00",
             "a": "12:00",
             "materia": "INGLESE",
+            "aula": "P3",
             "docente_assente": "DI SALVO SIMONETTA",
             "docente_sostituto": "AMMIRATA GIUSEPPE"
         },
@@ -8560,6 +8569,7 @@
             "da": "11:00",
             "a": "12:00",
             "materia": "LABORATORIO ELETTRICO",
+            "aula": "P25",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8570,6 +8580,7 @@
             "da": "12:00",
             "a": "13:00",
             "materia": "LABORATORIO ELETTRICO",
+            "aula": "P10",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8580,6 +8591,7 @@
             "da": "12:00",
             "a": "13:00",
             "materia": "LABORATORIO MECCANICA POLIVALENTE",
+            "aula": "P25",
             "docente_assente": "DI CARO VINCENZO",
             "docente_sostituto": "BARONE FABIO"
         },
@@ -8590,6 +8602,7 @@
             "da": "13:00",
             "a": "14:00",
             "materia": "LABORATORIO ELETTRICO",
+            "aula": "P23",
             "docente_assente": "MANGIAPANE AURELIO",
             "docente_sostituto": "BARBA SALVATORE"
         },
@@ -8600,6 +8613,7 @@
             "da": "13:00",
             "a": "14:00",
             "materia": "INGLESE",
+            "aula": "P24",
             "docente_assente": "DI SALVO SIMONETTA",
             "docente_sostituto": "CILLUFFO RICCARDO"
         },
@@ -8610,6 +8624,7 @@
             "da": "13:00",
             "a": "14:00",
             "materia": "LABORATORIO MECCANICA POLIVALENTE",
+            "aula": "P10",
             "docente_assente": "DI CARO VINCENZO",
             "docente_sostituto": "BARONE FABIO"
         }
