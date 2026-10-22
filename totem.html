@@ -822,19 +822,22 @@ html, body {
                     for (const l of (corso.lezioni || [])) {
                         if (normalizzaGiorno(l.giorno) !== giornoCode) continue;
 
-                        const piano = getPiano(l.aula);
+                        // Una sostituzione può spostare la lezione in un'altra aula: conta l'aula effettiva
+                        const sost1 = trovaSost(corso.nome, l, l.docente);
+                        const sost2 = l.tipo === 'divisa' ? trovaSost(corso.nome, l, l.docente2) : null;
+                        const aula1 = (sost1 && sost1.aula) || l.aula;
+                        const aula2 = (sost2 && sost2.aula) || l.aula2;
+
+                        const piano = getPiano(aula1);
 
                         if (CONFIG.filtro_piano !== null && CONFIG.filtro_piano !== '') {
                             if (piano !== parseInt(CONFIG.filtro_piano, 10)) continue;
                         }
-                        if (CONFIG.filtro_aula && l.aula !== CONFIG.filtro_aula) continue;
+                        if (CONFIG.filtro_aula && aula1 !== CONFIG.filtro_aula) continue;
 
                         const fasciaKey = l.da + '-' + l.a;
                         const inCorso = ora >= l.da && ora < l.a;
-                        const nomeAula = l.aula || 'N/A';
-
-                        const sost1 = trovaSost(corso.nome, l, l.docente);
-                        const sost2 = l.tipo === 'divisa' ? trovaSost(corso.nome, l, l.docente2) : null;
+                        const nomeAula = aula1 || 'N/A';
 
                         lezioni.push({
                             da: l.da,
@@ -846,30 +849,30 @@ html, body {
                             docente: sost1 ? sost1.docente_sostituto : (l.docente || ''),
                             sostituisce: sost1 ? sost1.docente_assente : null,
                             aula: nomeAula,
-                            id_aula: l.aula || null,
+                            id_aula: aula1 || null,
                             piano: piano,
                             in_corso: inCorso,
                             divisa: l.tipo === 'divisa' ? {
                                 materia2: l.materia2 || '',
                                 docente2: sost2 ? sost2.docente_sostituto : (l.docente2 || ''),
                                 sostituisce2: sost2 ? sost2.docente_assente : null,
-                                aula2: l.aula2 || null,
+                                aula2: aula2 || null,
                             } : null,
                         });
 
-                        if (l.aula) {
-                            auleSet[l.aula] = {
-                                id: l.aula,
-                                nome: l.aula,
+                        if (aula1) {
+                            auleSet[aula1] = {
+                                id: aula1,
+                                nome: aula1,
                                 piano
                             };
                         }
                         // aula2 del gruppo secondario va aggiunta alle aule
-                        if (l.tipo === 'divisa' && l.aula2) {
-                            auleSet[l.aula2] = {
-                                id: l.aula2,
-                                nome: l.aula2,
-                                piano: getPiano(l.aula2)
+                        if (l.tipo === 'divisa' && aula2) {
+                            auleSet[aula2] = {
+                                id: aula2,
+                                nome: aula2,
+                                piano: getPiano(aula2)
                             };
                         }
                         corsiSet[corso.nome] = true;
@@ -1047,7 +1050,7 @@ html, body {
                         (pageLabel ? '<span class="page-indicator">Pagina ' + pageLabel + '</span>' : '') +
                         '</div>';
                     html += '<table class="sost-table"><thead><tr>' +
-                        '<th>Ora</th><th>Corso</th><th>Materia</th><th>Docente assente</th><th>Sostituto</th>' +
+                        '<th>Ora</th><th>Corso</th><th>Materia</th><th>Docente assente</th><th>Sostituto</th><th>Aula</th>' +
                         '</tr></thead><tbody>';
                     pagina.forEach(function(s) {
                         const inCorso = (dati.ora || '') >= s.da && (dati.ora || '') < s.a;
@@ -1057,6 +1060,7 @@ html, body {
                             '<td>' + escHtml(s.materia) + '</td>' +
                             '<td>' + escHtml(s.docente_assente) + '</td>' +
                             '<td class="sost-nome">' + escHtml(s.docente_sostituto) + '</td>' +
+                            '<td>' + escHtml(s.aula || '') + '</td>' +
                             '</tr>';
                     });
                     html += '</tbody></table>';
