@@ -511,7 +511,7 @@ function sostHtml(lista, titolo) {
       perData[d].map(s =>
         '<div class="sost-riga">' + esc(s.da) + '–' + esc(s.a) + ' · ' + esc(s.corso) +
         '<br><strong>' + esc(s.docente_sostituto) + '</strong> <small>al posto di ' + esc(s.docente_assente) +
-        (s.materia ? ' (' + esc(s.materia) + ')' : '') + '</small></div>'
+        (s.materia ? ' (' + esc(s.materia) + ')' : '') + (s.aula ? ' · aula ' + esc(s.aula) : '') + '</small></div>'
       ).join('')
     ).join('') + '</div>';
 }
@@ -528,7 +528,8 @@ function sostSlot(corso, giorno, da, docente, perDocente) {
     .filter(s => s.corso === corso && s.giorno === giorno && s.da === da && s.docente_assente === docente)
     .map(s => '<div class="slot-sost">' + esc(fmtDataIt(s.data)) + ' · ' +
       (perDocente ? 'sostituito da ' : 'sostituisce ') + '<strong>' + esc(s.docente_sostituto) + '</strong>' +
-      (perDocente ? '' : ' (al posto di ' + esc(s.docente_assente) + ')') + '</div>')
+      (perDocente ? '' : ' (al posto di ' + esc(s.docente_assente) + ')') +
+      (s.aula ? ' · aula ' + esc(s.aula) : '') + '</div>')
     .join('');
 }
 
