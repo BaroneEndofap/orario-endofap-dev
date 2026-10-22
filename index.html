@@ -371,6 +371,17 @@
     .sost-riga small { color: var(--text-sub); }
     .sost-riga strong { color: #c2410c; }
 
+    .slot-sost {
+      margin-top: .25rem;
+      font-size: .75rem;
+      font-weight: 600;
+      color: #9a3412;
+      background: #ffedd5;
+      border: 1px solid #fed7aa;
+      border-radius: .4rem;
+      padding: .1rem .45rem;
+    }
+
     /* ── Messaggi ──────────────────────────────────────────────────────────── */
     .empty-msg {
       text-align: center;
@@ -509,6 +520,18 @@ function renderSostBanner() {
   document.getElementById('sost-banner').innerHTML = sostHtml(sostAttive(), 'Sostituzioni docenti');
 }
 
+/* Etichette "sostituito da…" per una lezione: una per ogni data futura con sostituzione.
+   `docente` = chi era in orario; `perDocente` = true nella griglia del docente (mostra chi lo sostituisce),
+   false nella griglia del corso (mostra chi sostituisce). */
+function sostSlot(corso, giorno, da, docente, perDocente) {
+  return sostAttive()
+    .filter(s => s.corso === corso && s.giorno === giorno && s.da === da && s.docente_assente === docente)
+    .map(s => '<div class="slot-sost">' + esc(fmtDataIt(s.data)) + ' · ' +
+      (perDocente ? 'sostituito da ' : 'sostituisce ') + '<strong>' + esc(s.docente_sostituto) + '</strong>' +
+      (perDocente ? '' : ' (al posto di ' + esc(s.docente_assente) + ')') + '</div>')
+    .join('');
+}
+
 function sostPerEntita(nome) {
   const lista = sostAttive().filter(s => currentTab === 'corsi'
     ? s.corso === nome
@@ -597,6 +620,7 @@ function buildDocenteGrid(entity) {
             <div class="slot-tag">${esc(s.corso)}</div>
             <div class="slot-main">${esc(s.materia)}</div>
             ${s.aula ? `<div class="slot-aula">${esc(s.aula)}</div>` : ''}
+            ${sostSlot(s.corso, day, s.da, entity.nome, true)}
           </div>
         </div>`).join('')
       : '<div class="day-empty">Nessuna lezione</div>';
@@ -625,11 +649,13 @@ function buildCorsoGrid(entity) {
                   <div class="slot-main">${esc(l.materia)}</div>
                   <div class="slot-sub">${esc(l.docente)}</div>
                   ${l.aula  ? `<div class="slot-aula">${esc(l.aula)}</div>`  : ''}
+                  ${sostSlot(entity.nome, day, l.da, l.docente, false)}
                 </div>
                 <div class="slot-divisa">
                   <div class="slot-main">${esc(l.materia2)}</div>
                   <div class="slot-sub">${esc(l.docente2)}</div>
                   ${l.aula2 ? `<div class="slot-aula">${esc(l.aula2)}</div>` : ''}
+                  ${sostSlot(entity.nome, day, l.da, l.docente2, false)}
                 </div>
               </div>
             </div>`;
@@ -643,6 +669,7 @@ function buildCorsoGrid(entity) {
               <div class="slot-main">${esc(l.materia)}</div>
               <div class="slot-sub">${esc(l.docente)}</div>
               ${l.aula ? `<div class="slot-aula">${esc(l.aula)}</div>` : ''}
+              ${sostSlot(entity.nome, day, l.da, l.docente, false)}
             </div>
           </div>`;
         }).join('')
