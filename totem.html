@@ -3,539 +3,578 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ENDOFAP — Orario Lezioni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDO-FAP — Orario Lezioni</title>
     <style>
-        /* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════
    TOTEM — Stili display orario su schermo 40" (1920×1080 landscape)
    Colori istituzionali ENDOFAP: sfondo chiaro, accenti blu #1a3a5c / #2c5282
    ═══════════════════════════════════════════════════════════════════════════ */
 
-        /* ── Reset & Base ────────────────────────────────────────────────────────── */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            background: #000;
-            font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ── Layout principale ───────────────────────────────────────────────────── */
-        .totem-wrapper {
-            display: flex;
-            flex-direction: column;
-            width: 1920px;
-            height: 1080px;
-            transform-origin: top left;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #eef2f7;
-            color: #1e293b;
-            overflow: hidden;
-        }
-
-        /* ── Header ──────────────────────────────────────────────────────────────── */
-        .totem-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #1a3a5c 0%, #2c5282 100%);
-            padding: 12px 32px;
-            flex-shrink: 0;
-            border-bottom: 4px solid #e8a838;
-            min-height: 80px;
-        }
-
-        .totem-header-logo {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .totem-header-logo img {
-            height: 56px;
-            width: auto;
-        }
-
-        .totem-header-logo .logo-text {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .totem-header-title {
-            text-align: center;
-            flex: 1;
-        }
-
-        .totem-header-title h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .totem-header-title .header-subtitle {
-            font-size: 1.3rem;
-            color: #e8a838;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .totem-header-clock {
-            text-align: right;
-            min-width: 200px;
-        }
-
-        .totem-clock-time {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: #fff;
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }
-
-        .totem-clock-date {
-            font-size: 1rem;
-            color: #bdd5ea;
-            margin-top: 2px;
-        }
-
-        /* ── Contenuto Carousel ──────────────────────────────────────────────────── */
-        .totem-content {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            padding: 16px 24px;
-            background: #eef2f7;
-        }
-
-        .totem-slide {
-            position: absolute;
-            inset: 16px 24px;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            transition: opacity 0.6s ease-in-out;
-            pointer-events: none;
-        }
-
-        .totem-slide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* ── Titolo slide ────────────────────────────────────────────────────────── */
-        .slide-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #1a3a5c;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 3px solid #2c5282;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .slide-title .page-indicator {
-            font-size: 0.9rem;
-            color: #64748b;
-            font-weight: 400;
-            text-transform: none;
-        }
-
-        /* ── Tabella Griglia (aule × fasce e corsi × fasce) ──────────────────────── */
-        .totem-grid {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 3px;
-            flex: 1;
-            table-layout: fixed;
-        }
-
-        .totem-grid th {
-            background: #2c5282;
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 600;
-            padding: 10px 6px;
-            text-align: center;
-            border-radius: 6px 6px 0 0;
-            white-space: nowrap;
-        }
-
-        .totem-grid th.col-label {
-            background: #1a3a5c;
-            text-align: left;
-            padding-left: 14px;
-            font-size: 1.1rem;
-            border-radius: 6px 0 0 6px;
-            min-width: 200px;
-            max-width: 280px;
-        }
-
-        .totem-grid th.fascia-corrente {
-            background: #16a34a;
-            box-shadow: 0 0 0 2px #22c55e inset;
-        }
-
-        .totem-grid td {
-            background: #fff;
-            padding: 8px 6px;
-            text-align: center;
-            vertical-align: middle;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            line-height: 1.3;
-            min-height: 60px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .totem-grid td.row-label {
-            background: #dbeafe;
-            color: #1e293b;
-            text-align: left;
-            padding-left: 14px;
-            font-weight: 600;
-            font-size: 1.05rem;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            border: 1px solid #bfdbfe;
-        }
-
-        .totem-grid td.filled {
-            background: #f0f7ff;
-            border-left: 4px solid #2c5282;
-        }
-
-        .totem-grid td.in-corso {
-            background: #dcfce7;
-            border-left: 4px solid #16a34a;
-            box-shadow: 0 0 0 1px #86efac inset;
-        }
-
-        .totem-grid td.empty {
-            background: #f8fafc;
-            color: #94a3b8;
-        }
-
-        /* Contenuto cella griglia */
-        .cell-main {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #1e293b;
-            margin-bottom: 2px;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .cell-sub {
-            font-size: 0.8rem;
-            color: #475569;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        /* ── Vista "Adesso / Prossima Ora" ───────────────────────────────────────── */
-        .vista-adesso {
-            display: flex;
-            gap: 24px;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .colonna-adesso {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow: hidden;
-        }
-
-        .colonna-adesso-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            padding: 12px 20px;
-            border-radius: 10px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-        }
-
-        .colonna-adesso-title.ora {
-            background: #dcfce7;
-            color: #15803d;
-            border: 2px solid #86efac;
-        }
-
-        .colonna-adesso-title.prossima {
-            background: #dbeafe;
-            color: #1a3a5c;
-            border: 2px solid #93c5fd;
-        }
-
-        .card-lezione {
-            background: #fff;
-            border-radius: 10px;
-            padding: 14px 18px;
-            border-left: 5px solid #2c5282;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            flex-shrink: 0;
-        }
-
-        .card-lezione.in-corso {
-            border-left-color: #16a34a;
-            background: #f0fdf4;
-        }
-
-        .card-lezione .card-orario {
-            font-size: 1rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        .card-lezione .card-corso {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1e293b;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .card-lezione .card-materia {
-            font-size: 1.1rem;
-            color: #334155;
-        }
-
-        .card-lezione .card-dettagli {
-            display: flex;
-            gap: 20px;
-            font-size: 0.95rem;
-            color: #475569;
-            margin-top: 2px;
-        }
-
-        .card-lezione .card-dettagli span::before {
-            margin-right: 4px;
-        }
-
-        /* Classi articolate (divisa) — card adesso */
-        .card-lezione .card-divisa {
-            display: flex;
-            gap: 8px;
-            margin-top: 2px;
-        }
-
-        .card-lezione .card-divisa-gruppo {
-            flex: 1;
-            min-width: 0;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.04);
-            border-radius: 6px;
-            border-left: 2px solid #4a6fa5;
-        }
-
-        .card-lezione.in-corso .card-divisa-gruppo {
-            border-left-color: #52b788;
-        }
-
-        .card-lezione .card-divisa-gruppo .card-materia {
-            font-size: 1rem;
-            color: #2c5282;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-lezione .card-divisa-gruppo .card-dettagli {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            font-size: 0.82rem;
-            color: #4a6080;
-            margin-top: 2px;
-        }
-
-        /* Classi articolate (divisa) — griglia corsi */
-        .cell-divider {
-            height: 1px;
-            background: rgba(0, 0, 0, 0.12);
-            margin: 3px -4px;
-        }
-
-        /* Colonna vuota */
-        .colonna-vuota {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            font-size: 1.3rem;
-            font-style: italic;
-        }
-
-        /* ── Messaggio stato vuoto / festivo ─────────────────────────────────────── */
-        .totem-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            gap: 16px;
-        }
-
-        .totem-empty-icon {
-            font-size: 5rem;
-            opacity: 0.5;
-        }
-
-        .totem-empty-text {
-            font-size: 2rem;
-            color: #475569;
-            text-align: center;
-        }
-
-        .totem-empty-sub {
-            font-size: 1.2rem;
-            color: #94a3b8;
-        }
-
-        /* ── Footer / Ticker ─────────────────────────────────────────────────────── */
-        .totem-footer {
-            background: #1a3a5c;
-            padding: 8px 24px;
-            flex-shrink: 0;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            border-top: 3px solid #2c5282;
-            overflow: hidden;
-        }
-
-        .totem-footer.hidden {
-            display: none;
-        }
-
-        .ticker-container {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .ticker-text {
-            display: inline-block;
-            white-space: nowrap;
-            animation: ticker-scroll 30s linear infinite;
-            font-size: 1.1rem;
-            color: #e8a838;
-            font-weight: 600;
-        }
-
-        @keyframes ticker-scroll {
-            0% {
-                transform: translateX(100vw);
-            }
-
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-
-        /* ── Indicatore slide ────────────────────────────────────────────────────── */
-        .slide-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 8px 0 4px;
-            flex-shrink: 0;
-            background: #eef2f7;
-        }
-
-        .slide-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #93c5fd;
-            transition: background 0.3s;
-        }
-
-        .slide-dot.active {
-            background: #2c5282;
-        }
-
-        /* ── Scrollable cards container ──────────────────────────────────────────── */
-        .cards-scroll {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        /* ── Slide Media/Immagine ─────────────────────────────────────────────────── */
-        .slide-media {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #fff;
-        }
-
-        .slide-media img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-
-        .slide-media-title {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(26, 58, 92, 0.85));
-            color: #fff;
-            font-size: 1.6rem;
-            font-weight: 700;
-            padding: 24px 32px 16px;
-            text-align: center;
-        }
-
-        /* ── Orario validità ─────────────────────────────────────────────────────── */
-        .orario-validita {
-            font-size: 0.85rem;
-            color: #64748b;
-            text-align: right;
-            padding: 4px 0;
-        }
-    </style>
+/* ── Reset & Base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    background: #eef2f7;
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout principale ───────────────────────────────────────────────────── */
+.totem-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.totem-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #1a3a5c 0%, #2c5282 100%);
+    padding: 12px 32px;
+    flex-shrink: 0;
+    border-bottom: 4px solid #e8a838;
+    min-height: 80px;
+}
+
+.totem-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.totem-header-logo img {
+    height: 56px;
+    width: auto;
+}
+
+.totem-header-logo .logo-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.totem-header-title {
+    text-align: center;
+    flex: 1;
+}
+
+.totem-header-title h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.totem-header-title .header-subtitle {
+    font-size: 1.3rem;
+    color: #e8a838;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.totem-header-clock {
+    text-align: right;
+    min-width: 200px;
+}
+
+.totem-clock-time {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.totem-clock-date {
+    font-size: 1rem;
+    color: #bdd5ea;
+    margin-top: 2px;
+}
+
+/* ── Contenuto Carousel ──────────────────────────────────────────────────── */
+.totem-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    padding: 16px 24px;
+    background: #eef2f7;
+}
+
+.totem-slide {
+    position: absolute;
+    inset: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    pointer-events: none;
+}
+
+.totem-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ── Titolo slide ────────────────────────────────────────────────────────── */
+.slide-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a3a5c;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #2c5282;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.slide-title .page-indicator {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 400;
+    text-transform: none;
+}
+
+/* ── Tabella Griglia (aule × fasce e corsi × fasce) ──────────────────────── */
+.totem-grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 3px;
+    flex: 1;
+    table-layout: fixed;
+}
+
+.totem-grid th {
+    background: #2c5282;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 10px 6px;
+    text-align: center;
+    border-radius: 6px 6px 0 0;
+    white-space: nowrap;
+}
+
+.totem-grid th.col-label {
+    background: #1a3a5c;
+    text-align: left;
+    padding-left: 14px;
+    font-size: 1.1rem;
+    border-radius: 6px 0 0 6px;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+.totem-grid th.fascia-corrente {
+    background: #16a34a;
+    box-shadow: 0 0 0 2px #22c55e inset;
+}
+
+.totem-grid td {
+    background: #fff;
+    padding: 8px 6px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    min-height: 60px;
+    border: 1px solid #e2e8f0;
+}
+
+.totem-grid td.row-label {
+    background: #dbeafe;
+    color: #1e293b;
+    text-align: left;
+    padding-left: 14px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    border: 1px solid #bfdbfe;
+}
+
+.totem-grid td.filled {
+    background: #f0f7ff;
+    border-left: 4px solid #2c5282;
+}
+
+.totem-grid td.in-corso {
+    background: #dcfce7;
+    border-left: 4px solid #16a34a;
+    box-shadow: 0 0 0 1px #86efac inset;
+}
+
+.totem-grid td.empty {
+    background: #f8fafc;
+    color: #94a3b8;
+}
+
+/* Contenuto cella griglia */
+.cell-main {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 2px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.cell-sub {
+    font-size: 0.8rem;
+    color: #475569;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* ── Vista "Adesso / Prossima Ora" ───────────────────────────────────────── */
+.vista-adesso {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.colonna-adesso {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.colonna-adesso-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+.colonna-adesso-title.ora {
+    background: #dcfce7;
+    color: #15803d;
+    border: 2px solid #86efac;
+}
+
+.colonna-adesso-title.prossima {
+    background: #dbeafe;
+    color: #1a3a5c;
+    border: 2px solid #93c5fd;
+}
+
+.card-lezione {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 5px solid #2c5282;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+.card-lezione.in-corso {
+    border-left-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.card-lezione .card-orario {
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.card-lezione .card-corso {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.card-lezione .card-materia {
+    font-size: 1.1rem;
+    color: #334155;
+}
+
+.card-lezione .card-dettagli {
+    display: flex;
+    gap: 20px;
+    font-size: 0.95rem;
+    color: #475569;
+    margin-top: 2px;
+}
+
+.card-lezione .card-dettagli span::before {
+    margin-right: 4px;
+}
+
+/* Classi articolate (divisa) — card adesso */
+.card-lezione .card-divisa {
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.card-lezione .card-divisa-gruppo {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 6px;
+    border-left: 2px solid #4a6fa5;
+}
+
+.card-lezione.in-corso .card-divisa-gruppo {
+    border-left-color: #52b788;
+}
+
+.card-lezione .card-divisa-gruppo .card-materia {
+    font-size: 1rem;
+    color: #2c5282;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-lezione .card-divisa-gruppo .card-dettagli {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    font-size: 0.82rem;
+    color: #4a6080;
+    margin-top: 2px;
+}
+
+/* Classi articolate (divisa) — griglia corsi */
+.cell-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
+    margin: 3px -4px;
+}
+
+/* Colonna vuota */
+.colonna-vuota {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.3rem;
+    font-style: italic;
+}
+
+/* ── Messaggio stato vuoto / festivo ─────────────────────────────────────── */
+.totem-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+}
+
+.totem-empty-icon {
+    font-size: 5rem;
+    opacity: 0.5;
+}
+
+.totem-empty-text {
+    font-size: 2rem;
+    color: #475569;
+    text-align: center;
+}
+
+.totem-empty-sub {
+    font-size: 1.2rem;
+    color: #94a3b8;
+}
+
+/* ── Footer / Ticker ─────────────────────────────────────────────────────── */
+.totem-footer {
+    background: #1a3a5c;
+    padding: 8px 24px;
+    flex-shrink: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    border-top: 3px solid #2c5282;
+    overflow: hidden;
+}
+
+.totem-footer.hidden {
+    display: none;
+}
+
+.ticker-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.ticker-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker-scroll 30s linear infinite;
+    font-size: 1.1rem;
+    color: #e8a838;
+    font-weight: 600;
+}
+
+@keyframes ticker-scroll {
+    0%   { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+}
+
+/* ── Indicatore slide ────────────────────────────────────────────────────── */
+.slide-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 0 4px;
+    flex-shrink: 0;
+    background: #eef2f7;
+}
+
+.slide-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #93c5fd;
+    transition: background 0.3s;
+}
+
+.slide-dot.active {
+    background: #2c5282;
+}
+
+/* ── Scrollable cards container ──────────────────────────────────────────── */
+.cards-scroll {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ── Slide Media/Immagine ─────────────────────────────────────────────────── */
+.slide-media {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.slide-media img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.slide-media-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(26, 58, 92, 0.85));
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 24px 32px 16px;
+    text-align: center;
+}
+
+/* ── Orario validità ─────────────────────────────────────────────────────── */
+.orario-validita {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-align: right;
+    padding: 4px 0;
+}
+
+
+/* ── Sostituzioni docenti ────────────────────────────────────────────────── */
+.totem-grid td.sostituzione {
+    background: #fff7ed;
+    border-left: 4px solid #ea580c;
+}
+
+.cell-sost {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #c2410c;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.card-lezione .cell-sost {
+    font-size: 1rem;
+    margin-top: 4px;
+}
+
+.sost-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 3px;
+    table-layout: fixed;
+}
+
+.sost-table th {
+    background: #c2410c;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 10px;
+    text-align: left;
+    border-radius: 6px;
+}
+
+.sost-table td {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 4px;
+    padding: 12px 10px;
+    font-size: 1.15rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.sost-table tr.in-corso td {
+    background: #ffedd5;
+    box-shadow: 0 0 0 1px #fb923c inset;
+}
+
+.sost-table td.sost-nome {
+    font-weight: 700;
+    color: #9a3412;
+}
+
+</style>
+    <script>window.TOTEM_GH_BASE = "https:\/\/baroneendofap.github.io\/orario-endofap-dev";</script>
 </head>
 
 <body>
@@ -545,7 +584,7 @@
         <!-- ═══ HEADER ═══ -->
         <header class="totem-header">
             <div class="totem-header-logo">
-                <img src="logo-endofap-white_web.png" alt="ENDOFAP" onerror="this.style.display='none'">
+                <img src="assets/img/logo-endofap-white_web.png" alt="ENDO-FAP" onerror="this.style.display='none'">
             </div>
             <div class="totem-header-title">
                 <h1>Orario Lezioni</h1>
@@ -569,14 +608,14 @@
         <footer class="totem-footer hidden" id="totemFooter">
             <div class="ticker-container">
                 <span class="ticker-text" id="tickerText">
-                    ENDOFAP Sicilia — Centro di Formazione Professionale
+                    ENDO-FAP Sicilia — Centro di Formazione Professionale
                 </span>
             </div>
         </footer>
     </div>
 
     <script>
-        (function () {
+        (function() {
             'use strict';
 
             // ── Configurazione ──────────────────────────────────────────────────────
@@ -585,15 +624,23 @@
                 rotationInterval: parseInt(getParam('intervallo') || '15') * 1000,
                 dataRefresh: 120000, // 2 minuti
                 clockRefresh: 1000,
-                maxRowsPerSlide: 3, // righe massime per slide tabella
-                jsonUrl: 'https://baroneendofap.github.io/orario-endofap/data/orario.json',
-                comunicazioniUrl: 'https://baroneendofap.github.io/orario-endofap/data/comunicazioni.json',
-                mediaUrl: 'https://baroneendofap.github.io/orario-endofap/data/media.json',
+                maxRowsPerSlide: 5, // righe massime per slide tabella
+                // Base dei file pubblicati: la imposta totem_base.php (o, nel totem.html su GitHub
+                // Pages, una costante inserita alla pubblicazione). Se manca resta il vecchio repo.
+                baseUrl: (typeof window.TOTEM_GH_BASE === 'string' && window.TOTEM_GH_BASE !== '') ?
+                    window.TOTEM_GH_BASE : 'https://baroneendofap.github.io/orario-endofap',
+                jsonUrl: null,
+                comunicazioniUrl: null,
+                mediaUrl: null,
                 tickerEnabled: getParam('ticker') === '1',
                 filtro_piano: getParam('piano'), // '0' o '1'
                 filtro_aula: getParam('aula'), // nome aula es. 'P1', 'T56'
-                vista_fissa: getParam('vista'), // 'aule', 'corsi', 'adesso' o null (tutte)
+                vista_fissa: getParam('vista'), // 'aule', 'corsi', 'adesso', 'sostituzioni', anche in sequenza (corsi,sostituzioni) o null (tutte)
             };
+
+            CONFIG.jsonUrl = CONFIG.baseUrl + '/data/orario.json';
+            CONFIG.comunicazioniUrl = CONFIG.baseUrl + '/data/comunicazioni.json';
+            CONFIG.mediaUrl = CONFIG.baseUrl + '/data/media.json';
 
             // ── Stato ────────────────────────────────────────────────────────────────
 
@@ -613,6 +660,11 @@
                 const d = document.createElement('div');
                 d.textContent = str || '';
                 return d.innerHTML;
+            }
+
+            /** Riga "Sost. di ..." mostrata sotto il docente quando la lezione è in sostituzione */
+            function etichettaSost(assente) {
+                return assente ? '<div class="cell-sost">Sostituisce: ' + escHtml(assente) + '</div>' : '';
             }
 
             /** Abbrevia un nome corso per stare in cella (es. "OIF ACCONCIATURA 1°A" → "ACCON. 1°A") */
@@ -688,6 +740,20 @@
                     fasce: [],
                     aule: [],
                     corsi: [],
+                    sostituzioni: [],
+                };
+
+                // Sostituzioni di oggi (overlay sull'orario: l'orario resta invariato)
+                const sostOggi = (raw.sostituzioni || []).filter(function(s) {
+                    return s.data === dataStr;
+                });
+                base.sostituzioni = sostOggi;
+                const trovaSost = function(nomeCorso, l, nomeDocente) {
+                    if (!nomeDocente) return null;
+                    return sostOggi.find(function(s) {
+                        return s.corso === nomeCorso && s.da === l.da && s.a === l.a &&
+                            s.docente_assente === nomeDocente;
+                    }) || null;
                 };
 
                 // Weekend → nessuna lezione
@@ -721,10 +787,10 @@
                     if (!orarioAttivo) {
                         return Object.assign(base, { errore: 'Nessun orario attivo per oggi' });
                     }
-                    rawCorsi = orarioAttivo.corsi || [];
-                    rawFasce = orarioAttivo.fasce || [];
+                    rawCorsi  = orarioAttivo.corsi  || [];
+                    rawFasce  = orarioAttivo.fasce  || [];
                     orarioDal = orarioAttivo.dal;   // già YYYY-MM-DD
-                    orarioAl = orarioAttivo.al;    // YYYY-MM-DD o null
+                    orarioAl  = orarioAttivo.al;    // YYYY-MM-DD o null
                 } else {
                     // Formato legacy: parsing dal dd/mm/yyyy → yyyy-mm-dd
                     rawCorsi = raw.corsi || [];
@@ -737,10 +803,10 @@
                 }
 
                 base.orario_dal = orarioDal || null;
-                base.orario_al = orarioAl || null;
+                base.orario_al  = orarioAl  || null;
 
                 // Fasce: "08:00-09:00" → {da, a}
-                const fasce = rawFasce.map(function (f) {
+                const fasce = rawFasce.map(function(f) {
                     const idx = f.indexOf('-', 3); // evita split sul '-' dei minuti
                     return {
                         da: f.slice(0, idx),
@@ -756,16 +822,22 @@
                     for (const l of (corso.lezioni || [])) {
                         if (normalizzaGiorno(l.giorno) !== giornoCode) continue;
 
-                        const piano = getPiano(l.aula);
+                        // Una sostituzione può spostare la lezione in un'altra aula: conta l'aula effettiva
+                        const sost1 = trovaSost(corso.nome, l, l.docente);
+                        const sost2 = l.tipo === 'divisa' ? trovaSost(corso.nome, l, l.docente2) : null;
+                        const aula1 = (sost1 && sost1.aula) || l.aula;
+                        const aula2 = (sost2 && sost2.aula) || l.aula2;
+
+                        const piano = getPiano(aula1);
 
                         if (CONFIG.filtro_piano !== null && CONFIG.filtro_piano !== '') {
                             if (piano !== parseInt(CONFIG.filtro_piano, 10)) continue;
                         }
-                        if (CONFIG.filtro_aula && l.aula !== CONFIG.filtro_aula) continue;
+                        if (CONFIG.filtro_aula && aula1 !== CONFIG.filtro_aula) continue;
 
                         const fasciaKey = l.da + '-' + l.a;
                         const inCorso = ora >= l.da && ora < l.a;
-                        const nomeAula = l.aula || 'N/A';
+                        const nomeAula = aula1 || 'N/A';
 
                         lezioni.push({
                             da: l.da,
@@ -774,38 +846,40 @@
                             corso: corso.nome,
                             id_corso: corso.nome,
                             materia: l.materia || '',
-                            docente: l.docente || '',
+                            docente: sost1 ? sost1.docente_sostituto : (l.docente || ''),
+                            sostituisce: sost1 ? sost1.docente_assente : null,
                             aula: nomeAula,
-                            id_aula: l.aula || null,
+                            id_aula: aula1 || null,
                             piano: piano,
                             in_corso: inCorso,
                             divisa: l.tipo === 'divisa' ? {
                                 materia2: l.materia2 || '',
-                                docente2: l.docente2 || '',
-                                aula2: l.aula2 || null,
+                                docente2: sost2 ? sost2.docente_sostituto : (l.docente2 || ''),
+                                sostituisce2: sost2 ? sost2.docente_assente : null,
+                                aula2: aula2 || null,
                             } : null,
                         });
 
-                        if (l.aula) {
-                            auleSet[l.aula] = {
-                                id: l.aula,
-                                nome: l.aula,
+                        if (aula1) {
+                            auleSet[aula1] = {
+                                id: aula1,
+                                nome: aula1,
                                 piano
                             };
                         }
                         // aula2 del gruppo secondario va aggiunta alle aule
-                        if (l.tipo === 'divisa' && l.aula2) {
-                            auleSet[l.aula2] = {
-                                id: l.aula2,
-                                nome: l.aula2,
-                                piano: getPiano(l.aula2)
+                        if (l.tipo === 'divisa' && aula2) {
+                            auleSet[aula2] = {
+                                id: aula2,
+                                nome: aula2,
+                                piano: getPiano(aula2)
                             };
                         }
                         corsiSet[corso.nome] = true;
                     }
                 }
 
-                lezioni.sort(function (a, b) {
+                lezioni.sort(function(a, b) {
                     return a.da.localeCompare(b.da) || a.aula.localeCompare(b.aula);
                 });
 
@@ -905,20 +979,39 @@
                     formattaData(dati.data);
 
                 let slidesHtml = [];
+                // ?vista= accetta una o più viste in sequenza, nell'ordine indicato:
+                //   aule, corsi, adesso, sostituzioni  (es. ?vista=corsi,sostituzioni)
+                // Senza ?vista= le mostra tutte (sostituzioni per prime).
                 const vistaFissa = CONFIG.vista_fissa;
+                const costruttori = {
+                    sostituzioni: costruisciSlideSostituzioni,
+                    aule: costruisciVistaAule,
+                    corsi: costruisciVistaCorsi,
+                    adesso: costruisciVistaAdesso,
+                };
+                const viste = vistaFissa ?
+                    vistaFissa.toLowerCase().split(/[\s,+;]+/).filter(Boolean)
+                        .filter(function(v, i, a) { return costruttori[v] && a.indexOf(v) === i; }) :
+                    ['sostituzioni', 'aule', 'corsi', 'adesso'];
 
-                if (!vistaFissa || vistaFissa === 'aule') {
-                    slidesHtml = slidesHtml.concat(costruisciVistaAule());
-                }
-                if (!vistaFissa || vistaFissa === 'corsi') {
-                    slidesHtml = slidesHtml.concat(costruisciVistaCorsi());
-                }
-                if (!vistaFissa || vistaFissa === 'adesso') {
-                    slidesHtml = slidesHtml.concat(costruisciVistaAdesso());
-                }
+                viste.forEach(function(v) {
+                    slidesHtml = slidesHtml.concat(costruttori[v]());
+                });
                 // Slide immagini/media da GitHub Pages (data/media.json)
                 if (dati.media && dati.media.length > 0) {
                     slidesHtml = slidesHtml.concat(costruisciSlideMedia());
+                }
+
+                // Vista fissa senza contenuti (es. ?vista=sostituzioni senza sostituzioni oggi):
+                // meglio un messaggio che una pagina bianca.
+                if (slidesHtml.length === 0) {
+                    const soloSostituzioni = viste.length === 1 && viste[0] === 'sostituzioni';
+                    const motivo = soloSostituzioni ? 'Nessuna sostituzione prevista per oggi' :
+                        'Nessun contenuto da mostrare';
+                    container.innerHTML = renderSlideVuota(motivo, 'Questa pagina si aggiorna da sola');
+                    slides = [];
+                    aggiornaIndicatori();
+                    return;
                 }
 
                 container.innerHTML = slidesHtml.join('');
@@ -932,28 +1025,6 @@
 
                 aggiornaIndicatori();
                 avviaRotazione();
-                requestAnimationFrame(adattaTabelle);
-            }
-
-            function adattaTabelle() {
-                document.querySelectorAll('.totem-slide').forEach(function (slide) {
-                    const table = slide.querySelector('.totem-grid');
-                    if (!table) return;
-                    table.style.zoom = '';
-                    let otherH = 0;
-                    for (const child of slide.children) {
-                        if (child === table) continue;
-                        const cs = window.getComputedStyle(child);
-                        otherH += child.offsetHeight
-                            + parseFloat(cs.marginTop || 0)
-                            + parseFloat(cs.marginBottom || 0);
-                    }
-                    const availH = slide.offsetHeight - otherH - 4;
-                    const tableH = table.offsetHeight;
-                    if (tableH > availH && availH > 0) {
-                        table.style.zoom = String(+(availH / tableH).toFixed(4));
-                    }
-                });
             }
 
             function formattaData(dataStr) {
@@ -964,10 +1035,11 @@
 
             // ── Slide Vuota (festivo / nessun dato) ──────────────────────────────────
 
-            function renderSlideVuota() {
-                let motivo = 'Nessuna lezione programmata per oggi';
+            function renderSlideVuota(motivoForzato, sottotitolo) {
+                let motivo = motivoForzato || 'Nessuna lezione programmata per oggi';
                 if (dati) {
-                    if (dati.festivo) motivo = dati.motivo || 'Giornata festiva';
+                    if (motivoForzato) { /* motivo esplicito */ }
+                    else if (dati.festivo) motivo = dati.motivo || 'Giornata festiva';
                     else if (dati.errore) motivo = dati.errore;
                     document.getElementById('headerGiorno').textContent =
                         (dati.giorno || '') + ' ' + formattaData(dati.data);
@@ -975,8 +1047,44 @@
                 return '<div class="totem-slide active"><div class="totem-empty">' +
                     '<div class="totem-empty-icon">&#128218;</div>' +
                     '<div class="totem-empty-text">' + escHtml(motivo) + '</div>' +
-                    '<div class="totem-empty-sub">Le lezioni riprenderanno regolarmente</div>' +
+                    '<div class="totem-empty-sub">' + escHtml(sottotitolo || 'Le lezioni riprenderanno regolarmente') + '</div>' +
                     '</div></div>';
+            }
+
+            // ── Slide SOSTITUZIONI (docenti assenti sostituiti oggi) ─────────────────
+
+            function costruisciSlideSostituzioni() {
+                const elenco = (dati.sostituzioni || []).slice().sort(function(a, b) {
+                    return a.da.localeCompare(b.da) || a.corso.localeCompare(b.corso);
+                });
+                if (elenco.length === 0) return [];
+
+                const pages = paginaRighe(elenco, 8);
+                return pages.map(function(pagina, p) {
+                    const pageLabel = pages.length > 1 ? (p + 1) + '/' + pages.length : '';
+                    let html = '<div class="totem-slide">';
+                    html += '<div class="slide-title">Sostituzioni di oggi' +
+                        (pageLabel ? '<span class="page-indicator">Pagina ' + pageLabel + '</span>' : '') +
+                        '</div>';
+                    html += '<table class="sost-table"><thead><tr>' +
+                        '<th>Ora</th><th>Corso</th><th>Materia</th><th>Docente assente</th><th>Sostituto</th><th>Aula</th>' +
+                        '</tr></thead><tbody>';
+                    pagina.forEach(function(s) {
+                        const inCorso = (dati.ora || '') >= s.da && (dati.ora || '') < s.a;
+                        html += '<tr' + (inCorso ? ' class="in-corso"' : '') + '>' +
+                            '<td>' + escHtml(s.da) + '–' + escHtml(s.a) + '</td>' +
+                            '<td>' + escHtml(s.corso) + '</td>' +
+                            '<td>' + escHtml(s.materia) + '</td>' +
+                            '<td>' + escHtml(s.docente_assente) + '</td>' +
+                            '<td class="sost-nome">' + escHtml(s.docente_sostituto) + '</td>' +
+                            '<td>' + escHtml(s.aula || '') + '</td>' +
+                            '</tr>';
+                    });
+                    html += '</tbody></table>';
+                    html += renderValidita();
+                    html += '</div>';
+                    return html;
+                });
             }
 
             // ── Vista AULE ───────────────────────────────────────────────────────────
@@ -1094,29 +1202,34 @@
                         const isCurrent = (oraCorrente >= f.da && oraCorrente < f.a);
 
                         if (lez) {
-                            const cls = isCurrent ? 'filled in-corso' : 'filled';
+                            const cls = (isCurrent ? 'filled in-corso' : 'filled') +
+                                ((lez.sostituisce || (lez.divisa && lez.divisa.sostituisce2)) ? ' sostituzione' : '');
                             if (tipo === 'aula') {
                                 html += '<td class="' + cls + '">';
                                 html += '<div class="cell-main">' + escHtml(abbreviaCorso(lez.corso)) + '</div>';
                                 html += '<div class="cell-sub">' + escHtml(lez.materia) + '</div>';
                                 html += '<div class="cell-sub">' + escHtml(lez.docente) + '</div>';
+                                html += etichettaSost(lez.sostituisce);
                                 // Classe divisa: il secondo gruppo appare come riga separata (aula2 nota)
                                 // oppure nella stessa cella se l'aula del secondo gruppo non è definita
                                 if (lez.divisa && !lez.divisa.aula2) {
                                     html += '<div class="cell-divider"></div>';
                                     html += '<div class="cell-main">' + escHtml(lez.divisa.materia2) + '</div>';
                                     html += '<div class="cell-sub">' + escHtml(lez.divisa.docente2) + '</div>';
+                                    html += etichettaSost(lez.divisa.sostituisce2);
                                 }
                                 html += '</td>';
                             } else {
                                 html += '<td class="' + cls + '">';
                                 html += '<div class="cell-main">' + escHtml(lez.materia) + '</div>';
                                 html += '<div class="cell-sub">' + escHtml(lez.docente) + '</div>';
+                                html += etichettaSost(lez.sostituisce);
                                 html += '<div class="cell-sub">' + escHtml(lez.aula) + '</div>';
                                 if (lez.divisa) {
                                     html += '<div class="cell-divider"></div>';
                                     html += '<div class="cell-main">' + escHtml(lez.divisa.materia2) + '</div>';
                                     html += '<div class="cell-sub">' + escHtml(lez.divisa.docente2) + '</div>';
+                                    html += etichettaSost(lez.divisa.sostituisce2);
                                     if (lez.divisa.aula2) html += '<div class="cell-sub">' + escHtml(lez.divisa.aula2) + '</div>';
                                 }
                                 html += '</td>';
@@ -1254,20 +1367,20 @@
                         '<div class="card-dettagli">' +
                         '<span>' + escHtml(lez.docente) + '</span>' +
                         '<span>' + escHtml(lez.aula) + '</span>' +
-                        '</div></div>';
+                        '</div>' + etichettaSost(lez.sostituisce) + '</div>';
                     html += '<div class="card-divisa-gruppo">' +
                         '<div class="card-materia">' + escHtml(lez.divisa.materia2) + '</div>' +
                         '<div class="card-dettagli">' +
                         '<span>' + escHtml(lez.divisa.docente2) + '</span>' +
                         (lez.divisa.aula2 ? '<span>' + escHtml(lez.divisa.aula2) + '</span>' : '') +
-                        '</div></div>';
+                        '</div>' + etichettaSost(lez.divisa.sostituisce2) + '</div>';
                     html += '</div>';
                 } else {
                     html += '<div class="card-materia">' + escHtml(lez.materia) + '</div>' +
                         '<div class="card-dettagli">' +
                         '<span>Docente: ' + escHtml(lez.docente) + '</span>' +
                         '<span>Aula: ' + escHtml(lez.aula) + '</span>' +
-                        '</div>';
+                        '</div>' + etichettaSost(lez.sostituisce);
                 }
                 html += '</div>';
                 return html;
@@ -1286,6 +1399,11 @@
                     formattaData(dati.orario_dal) +
                     (dati.orario_al ? ' al ' + formattaData(dati.orario_al) : '') +
                     '</div>';
+            }
+
+            /** Le immagini sono salvate con percorso relativo al repo (media/xxx.jpg) */
+            function urlMedia(u) {
+                return /^(https?:)?\/\//.test(u || '') ? u : CONFIG.baseUrl + '/' + (u || '');
             }
 
             // ── Paginazione righe ────────────────────────────────────────────────────
@@ -1308,7 +1426,7 @@
                     const durata = parseInt(m.durata) || 15;
                     let html = '<div class="totem-slide" data-durata="' + durata + '">';
                     html += '<div class="slide-media">';
-                    html += '<img src="' + escHtml(m.url) + '" alt="' + escHtml(m.titolo || '') + '">';
+                    html += '<img src="' + escHtml(urlMedia(m.url)) + '" alt="' + escHtml(m.titolo || '') + '">';
                     if (m.titolo) {
                         html += '<div class="slide-media-title">' + escHtml(m.titolo) + '</div>';
                     }
@@ -1365,29 +1483,7 @@
 
             // ── Inizializzazione ─────────────────────────────────────────────────────
 
-            function fitToScreen() {
-                const wrapper = document.querySelector('.totem-wrapper');
-                if (!wrapper) return;
-                const sw = window.innerWidth || screen.width || 1920;
-                const sh = window.innerHeight || screen.height || 1080;
-                // Design base: 1920×1080. Su ogni TV/risoluzione scala proporzionalmente.
-                const BASE_W = 1920;
-                const BASE_H = 1080;
-                const scale = Math.min(sw / BASE_W, sh / BASE_H);
-                const offX = Math.floor((sw - BASE_W * scale) / 2);
-                const offY = Math.floor((sh - BASE_H * scale) / 2);
-                wrapper.style.width = BASE_W + 'px';
-                wrapper.style.height = BASE_H + 'px';
-                wrapper.style.transform = 'scale(' + scale + ')';
-                wrapper.style.left = offX + 'px';
-                wrapper.style.top = offY + 'px';
-                document.body.style.background = '#000';
-            }
-
             function init() {
-                fitToScreen();
-                window.addEventListener('resize', fitToScreen);
-
                 aggiornaOrologio();
                 setInterval(aggiornaOrologio, CONFIG.clockRefresh);
 
