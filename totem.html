@@ -635,6 +635,11 @@ html, body {
                 tickerEnabled: getParam('ticker') === '1',
                 filtro_piano: getParam('piano'), // '0' o '1'
                 filtro_aula: getParam('aula'), // nome aula es. 'P1', 'T56'
+                // Turni: con classi sia al mattino sia al pomeriggio mostra solo il turno in corso.
+                //   ?turno=tutti (disattiva) | mattina | pomeriggio (fisso) | auto (predefinito)
+                //   ?cambio=HH:MM  ora di cambio turno, predefinita 14:00 (decide dall'ora di inizio della lezione)
+                turno: (getParam('turno') || 'auto').toLowerCase(),
+                cambio_turno: /^\d{1,2}:\d{2}$/.test(getParam('cambio') || '') ? getParam('cambio').padStart(5, '0') : '14:00',
                 vista_fissa: getParam('vista'), // 'aule', 'corsi', 'adesso', 'sostituzioni', anche in sequenza (corsi,sostituzioni) o null (tutte)
             };
 
@@ -818,9 +823,31 @@ html, body {
                 const auleSet = {};
                 const corsiSet = {};
 
+                // ── Turno in corso ─────────────────────────────────────────────────
+                // Una lezione è "del mattino" se inizia prima dell'ora di cambio, altrimenti "del pomeriggio".
+                // Il filtro scatta solo se oggi ci sono lezioni in entrambi i turni; una lezione già in corso
+                // resta visibile anche se appartiene al turno precedente (solo in modalità auto).
+                const cambio = CONFIG.cambio_turno;
+                const turnoDi = function(da) { return da < cambio ? 'mattina' : 'pomeriggio'; };
+                const turniPresenti = { mattina: false, pomeriggio: false };
+                for (const corso of rawCorsi) {
+                    for (const l of (corso.lezioni || [])) {
+                        if (normalizzaGiorno(l.giorno) === giornoCode) turniPresenti[turnoDi(l.da)] = true;
+                    }
+                }
+                const turnoAuto = ['tutti', 'mattina', 'pomeriggio'].indexOf(CONFIG.turno) === -1;
+                let turnoAttivo = null;
+                if (CONFIG.turno === 'mattina' || CONFIG.turno === 'pomeriggio') {
+                    turnoAttivo = turniPresenti[CONFIG.turno] ? CONFIG.turno : null;
+                } else if (CONFIG.turno !== 'tutti' && turniPresenti.mattina && turniPresenti.pomeriggio) {
+                    turnoAttivo = turnoDi(ora);
+                }
+                base.turno = turnoAttivo;
+
                 for (const corso of rawCorsi) {
                     for (const l of (corso.lezioni || [])) {
                         if (normalizzaGiorno(l.giorno) !== giornoCode) continue;
+                        if (turnoAttivo && turnoDi(l.da) !== turnoAttivo && !(turnoAuto && ora >= l.da && ora < l.a)) continue;
 
                         // Una sostituzione può spostare la lezione in un'altra aula: conta l'aula effettiva
                         const sost1 = trovaSost(corso.nome, l, l.docente);
@@ -976,7 +1003,8 @@ html, body {
                 }
 
                 document.getElementById('headerGiorno').textContent = dati.giorno + ' ' +
-                    formattaData(dati.data);
+                    formattaData(dati.data) +
+                    (dati.turno ? ' · Turno ' + (dati.turno === 'mattina' ? 'del mattino' : 'del pomeriggio') : '');
 
                 let slidesHtml = [];
                 // ?vista= accetta una o più viste in sequenza, nell'ordine indicato:
@@ -994,8 +1022,13 @@ html, body {
                         .filter(function(v, i, a) { return costruttori[v] && a.indexOf(v) === i; }) :
                     ['sostituzioni', 'aule', 'corsi', 'adesso'];
 
+                // Un errore in una vista non deve azzerare anche le altre
                 viste.forEach(function(v) {
-                    slidesHtml = slidesHtml.concat(costruttori[v]());
+                    try {
+                        slidesHtml = slidesHtml.concat(costruttori[v]());
+                    } catch (err) {
+                        console.error('Errore nella vista "' + v + '":', err);
+                    }
                 });
                 // Slide immagini/media da GitHub Pages (data/media.json)
                 if (dati.media && dati.media.length > 0) {
@@ -1015,6 +1048,7 @@ html, body {
                 }
 
                 container.innerHTML = slidesHtml.join('');
+                adattaSlideAlloSchermo(container);
                 slides = container.querySelectorAll('.totem-slide');
 
                 // Attiva la prima slide
@@ -1055,7 +1089,8 @@ html, body {
 
             function costruisciSlideSostituzioni() {
                 const elenco = (dati.sostituzioni || []).slice().sort(function(a, b) {
-                    return a.da.localeCompare(b.da) || a.corso.localeCompare(b.corso);
+                    return String(a.da || '').localeCompare(String(b.da || '')) ||
+                        String(a.corso || '').localeCompare(String(b.corso || ''));
                 });
                 if (elenco.length === 0) return [];
 
@@ -1070,7 +1105,7 @@ html, body {
                         '<th>Ora</th><th>Corso</th><th>Materia</th><th>Docente assente</th><th>Sostituto</th><th>Aula</th>' +
                         '</tr></thead><tbody>';
                     pagina.forEach(function(s) {
-                        const inCorso = (dati.ora || '') >= s.da && (dati.ora || '') < s.a;
+                        const inCorso = (dati.ora || '') >= (s.da || '') && (dati.ora || '') < (s.a || '');
                         html += '<tr' + (inCorso ? ' class="in-corso"' : '') + '>' +
                             '<td>' + escHtml(s.da) + '–' + escHtml(s.a) + '</td>' +
                             '<td>' + escHtml(s.corso) + '</td>' +
@@ -1404,6 +1439,87 @@ html, body {
             /** Le immagini sono salvate con percorso relativo al repo (media/xxx.jpg) */
             function urlMedia(u) {
                 return /^(https?:)?\/\//.test(u || '') ? u : CONFIG.baseUrl + '/' + (u || '');
+            }
+
+            // ── Adattamento allo schermo ─────────────────────────────────────────────
+            // Le slide sono paginate per numero fisso di righe, ma l'altezza reale dipende dallo
+            // schermo (smart TV 1280x720, 1366x768, …) e dalla lunghezza dei testi. Dopo il rendering
+            // si misura cosa non entra: le righe in eccesso passano a una pagina successiva e, solo se
+            // neanche una riga entra, la slide viene rimpicciolita. Così nulla viene tagliato.
+
+            /** Altezza occupata dal contenuto di una slide (dal bordo alto della slide). */
+            function altezzaContenuto(slide) {
+                const top = slide.getBoundingClientRect().top;
+                let bottom = top;
+                for (const c of slide.children) bottom = Math.max(bottom, c.getBoundingClientRect().bottom);
+                return bottom - top;
+            }
+
+            function dividiSlideSeNecessario(slide) {
+                const tbl = slide.querySelector('table.totem-grid, table.sost-table');
+                if (!tbl || !tbl.tBodies[0]) return;
+                const tbody = tbl.tBodies[0];
+                const flexOriginale = tbl.style.flex;
+                tbl.style.flex = 'none'; // altezza naturale delle righe, senza stiramento
+                const spostate = [];
+                while (altezzaContenuto(slide) > slide.clientHeight + 1 && tbody.rows.length > 1) {
+                    spostate.unshift(tbody.rows[tbody.rows.length - 1]);
+                    tbody.removeChild(tbody.rows[tbody.rows.length - 1]);
+                }
+                tbl.style.flex = flexOriginale;
+                if (spostate.length === 0) return;
+
+                const nuova = slide.cloneNode(true);
+                const nuovoBody = nuova.querySelector('table').tBodies[0];
+                while (nuovoBody.rows.length) nuovoBody.removeChild(nuovoBody.rows[0]);
+                spostate.forEach(function(r) { nuovoBody.appendChild(r); });
+                slide.parentNode.insertBefore(nuova, slide.nextSibling);
+                dividiSlideSeNecessario(nuova);
+            }
+
+            /** Rinumera "Pagina i/n" sui gruppi di slide con lo stesso titolo. */
+            function rinumeraPagine(container) {
+                const gruppi = [];
+                container.querySelectorAll('.totem-slide').forEach(function(sl) {
+                    const t = sl.querySelector('.slide-title');
+                    if (!t) return;
+                    const chiave = t.firstChild ? t.firstChild.textContent : '';
+                    const ultimo = gruppi[gruppi.length - 1];
+                    if (ultimo && ultimo.chiave === chiave) ultimo.titoli.push(t);
+                    else gruppi.push({ chiave: chiave, titoli: [t] });
+                });
+                gruppi.forEach(function(g) {
+                    g.titoli.forEach(function(t, i) {
+                        let ind = t.querySelector('.page-indicator');
+                        if (g.titoli.length === 1) { if (ind) ind.remove(); return; }
+                        if (!ind) {
+                            ind = document.createElement('span');
+                            ind.className = 'page-indicator';
+                            t.appendChild(ind);
+                        }
+                        ind.textContent = 'Pagina ' + (i + 1) + '/' + g.titoli.length;
+                    });
+                });
+            }
+
+            /** Ultima risorsa: se neppure una riga entra, rimpicciolisce la slide. */
+            function scalaSeSfora(slide) {
+                const H = slide.clientHeight, W = slide.clientWidth;
+                const necessaria = altezzaContenuto(slide);
+                if (necessaria <= H + 1) return;
+                const r = H / necessaria;
+                slide.style.transformOrigin = 'top left';
+                slide.style.transform = 'scale(' + r + ')';
+                slide.style.right = 'auto';
+                slide.style.bottom = 'auto';
+                slide.style.width = (W / r) + 'px';
+                slide.style.height = (H / r) + 'px';
+            }
+
+            function adattaSlideAlloSchermo(container) {
+                Array.from(container.querySelectorAll('.totem-slide')).forEach(dividiSlideSeNecessario);
+                rinumeraPagine(container);
+                container.querySelectorAll('.totem-slide').forEach(scalaSeSfora);
             }
 
             // ── Paginazione righe ────────────────────────────────────────────────────
