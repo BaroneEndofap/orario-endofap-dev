@@ -1,5 +1,5 @@
 {
-    "aggiornato": "2026-11-12T09:34:26",
+    "aggiornato": "2026-11-12T09:36:07",
     "anno_formativo": "2026\/2027",
     "orari": [
         {
@@ -227,8 +227,8 @@
                         },
                         {
                             "giorno": "GIO",
-                            "da": "13:00",
-                            "a": "14:00",
+                            "da": "10:00",
+                            "a": "11:00",
                             "corso": "OP. MECCANICO IeFP-2",
                             "materia": "Informatica e competenze digitali",
                             "aula": "P29"
@@ -2691,14 +2691,6 @@
                         },
                         {
                             "giorno": "GIO",
-                            "da": "10:00",
-                            "a": "11:00",
-                            "corso": "OP. MECCANICO IeFP-2",
-                            "materia": "LAB. MECCANICO 2",
-                            "aula": "T29"
-                        },
-                        {
-                            "giorno": "GIO",
                             "da": "11:00",
                             "a": "12:00",
                             "corso": "OP. MECCANICO IeFP-2",
@@ -2709,6 +2701,14 @@
                             "giorno": "GIO",
                             "da": "12:00",
                             "a": "13:00",
+                            "corso": "OP. MECCANICO IeFP-2",
+                            "materia": "LAB. MECCANICO 2",
+                            "aula": "T29"
+                        },
+                        {
+                            "giorno": "GIO",
+                            "da": "13:00",
+                            "a": "14:00",
                             "corso": "OP. MECCANICO IeFP-2",
                             "materia": "LAB. MECCANICO 2",
                             "aula": "T29"
@@ -5182,9 +5182,9 @@
                             "giorno": "GIO",
                             "da": "10:00",
                             "a": "11:00",
-                            "materia": "LAB. MECCANICO 2",
-                            "docente": "STANCAMPIANO GIUSEPPE",
-                            "aula": "T29"
+                            "materia": "Informatica e competenze digitali",
+                            "docente": "AMMIRATA GIUSEPPE",
+                            "aula": "P29"
                         },
                         {
                             "giorno": "GIO",
@@ -5206,9 +5206,9 @@
                             "giorno": "GIO",
                             "da": "13:00",
                             "a": "14:00",
-                            "materia": "Informatica e competenze digitali",
-                            "docente": "AMMIRATA GIUSEPPE",
-                            "aula": "P29"
+                            "materia": "LAB. MECCANICO 2",
+                            "docente": "STANCAMPIANO GIUSEPPE",
+                            "aula": "T29"
                         },
                         {
                             "giorno": "VEN",
@@ -6834,8 +6834,8 @@
                 },
                 {
                     "giorno": "GIO",
-                    "da": "13:00",
-                    "a": "14:00",
+                    "da": "10:00",
+                    "a": "11:00",
                     "corso": "OP. MECCANICO IeFP-2",
                     "materia": "Informatica e competenze digitali",
                     "aula": "P29"
@@ -9298,14 +9298,6 @@
                 },
                 {
                     "giorno": "GIO",
-                    "da": "10:00",
-                    "a": "11:00",
-                    "corso": "OP. MECCANICO IeFP-2",
-                    "materia": "LAB. MECCANICO 2",
-                    "aula": "T29"
-                },
-                {
-                    "giorno": "GIO",
                     "da": "11:00",
                     "a": "12:00",
                     "corso": "OP. MECCANICO IeFP-2",
@@ -9316,6 +9308,14 @@
                     "giorno": "GIO",
                     "da": "12:00",
                     "a": "13:00",
+                    "corso": "OP. MECCANICO IeFP-2",
+                    "materia": "LAB. MECCANICO 2",
+                    "aula": "T29"
+                },
+                {
+                    "giorno": "GIO",
+                    "da": "13:00",
+                    "a": "14:00",
                     "corso": "OP. MECCANICO IeFP-2",
                     "materia": "LAB. MECCANICO 2",
                     "aula": "T29"
@@ -11789,9 +11789,9 @@
                     "giorno": "GIO",
                     "da": "10:00",
                     "a": "11:00",
-                    "materia": "LAB. MECCANICO 2",
-                    "docente": "STANCAMPIANO GIUSEPPE",
-                    "aula": "T29"
+                    "materia": "Informatica e competenze digitali",
+                    "docente": "AMMIRATA GIUSEPPE",
+                    "aula": "P29"
                 },
                 {
                     "giorno": "GIO",
@@ -11813,9 +11813,9 @@
                     "giorno": "GIO",
                     "da": "13:00",
                     "a": "14:00",
-                    "materia": "Informatica e competenze digitali",
-                    "docente": "AMMIRATA GIUSEPPE",
-                    "aula": "P29"
+                    "materia": "LAB. MECCANICO 2",
+                    "docente": "STANCAMPIANO GIUSEPPE",
+                    "aula": "T29"
                 },
                 {
                     "giorno": "VEN",
