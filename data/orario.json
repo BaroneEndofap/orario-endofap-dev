@@ -1,5 +1,5 @@
 {
-    "aggiornato": "2026-11-12T09:36:07",
+    "aggiornato": "2026-11-13T12:25:03",
     "anno_formativo": "2026\/2027",
     "orari": [
         {
@@ -6612,7 +6612,85 @@
             ]
         }
     ],
-    "sostituzioni": [],
+    "sostituzioni": [
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP.ABBIGLIAMENTO-OP. BEN. ACC IeFP-1",
+            "da": "08:00",
+            "a": "09:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "BARONE FABIO"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP. BENESSERE ACC IeFP-2",
+            "da": "09:00",
+            "a": "10:00",
+            "materia": "STORIA",
+            "aula": null,
+            "docente_assente": "VULLO ENZA",
+            "docente_sostituto": "AMMIRATA GIUSEPPE"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP.ABBIGLIAMENTO-OP. BEN. ACC IeFP-1",
+            "da": "09:00",
+            "a": "10:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "BOSCO GIOVANNA"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP.ABBIGLIAMENTO-OP. BEN. ACC IeFP-1",
+            "da": "10:00",
+            "a": "11:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "URSUMANDO ROBERTO"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP. BEN. ACC - OP. EL IeFP-1",
+            "da": "11:00",
+            "a": "12:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "DI VITA FRANCESCO"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP. BEN. ACC - OP. EL IeFP-1",
+            "da": "12:00",
+            "a": "13:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "CASCINA MASSIMILIANO"
+        },
+        {
+            "data": "2026-11-16",
+            "giorno": "LUN",
+            "corso": "OP. BEN. ACC - OP. EL IeFP-1",
+            "da": "13:00",
+            "a": "14:00",
+            "materia": "LABORATORIO DI ACCONCIATURA",
+            "aula": null,
+            "docente_assente": "ZAMA VINCENZA",
+            "docente_sostituto": "MANGIAPANE AURELIO"
+        }
+    ],
     "dal": "12\/11\/2026",
     "fasce": [
         "08:00-09:00",
